@@ -84,14 +84,11 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = ' '
+-- Set <space> as the leader key See `:help mapleader` NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used) vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -228,6 +225,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  -- xcode colorscheme
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -249,7 +247,7 @@ require('lazy').setup({
       signs = {
         add = { text = '+' },
         change = { text = '~' },
-        delete = { text = '_' },
+        delete = { text = '-' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
@@ -626,6 +624,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
         --
+        ts_ls = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -712,7 +711,7 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -839,12 +838,12 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'tokyonight-moon'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -897,7 +896,21 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        'typescript',
+        'javascript',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -967,3 +980,36 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+--
+-- My own configurations
+-- binds Ctrl + Enter to split window
+vim.api.nvim_set_keymap('n', '<C-CR>', ':split<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-\\>', ':vsplit<CR>', { noremap = true, silent = true })
+-- press "qq" in normal mode to quit current buffer
+vim.api.nvim_set_keymap('n', 'qq', ':bd<CR>', { noremap = true, silent = true })
+
+-- Function to handle the "qqq" prompt
+local function quit_prompt()
+  local choice = vim.fn.input 'You gon give up that easily? (yy/y/n): '
+
+  if choice == 'yy' then
+    vim.cmd 'qa!' -- Quit all without saving
+  elseif choice == 'y' then
+    vim.cmd 'wqa' -- Quit all with saving
+  else
+    vim.cmd 'stopinsert'
+    print 'Cool. Carry on boy!'
+  end
+end
+
+-- Register the function as a Neovim command
+vim.api.nvim_create_user_command('QuitPrompt', quit_prompt, {})
+
+-- Mapping for 'qq' to close current buffer
+vim.api.nvim_set_keymap('n', 'qq', ':bd<CR>', { noremap = true, silent = true })
+
+-- Mapping for 'qa' to trigger the quit prompt
+vim.api.nvim_set_keymap('n', 'qa', ':QuitPrompt<CR>', { noremap = true, silent = true })
+
+vim.opt.termguicolors = true
