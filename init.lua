@@ -891,6 +891,16 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  -- Nerdtree configs
+  {
+    'preservim/nerdtree',
+    config = function()
+      vim.g.NERDTreeWinSize = 30 -- Set Nerdtree default window size
+      vim.g.NERDTreeShowHidden = 1 -- Show hidden files
+      vim.g.NERDTreeMinimalUI = 1 -- Minimal UI for Nerdtree
+    end,
+  },
+
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -989,6 +999,8 @@ vim.api.nvim_set_keymap('n', '<C-CR>', ':split<CR>', { noremap = true, silent = 
 vim.api.nvim_set_keymap('n', '<C-\\>', ':vsplit<CR>', { noremap = true, silent = true })
 -- press "qq" in normal mode to quit current buffer
 vim.api.nvim_set_keymap('n', 'qq', ':bd<CR>', { noremap = true, silent = true })
+-- Keymap for opening Nerdtree
+vim.api.nvim_set_keymap('n', '<C-n>', ':NERDTreeToggle<CR>', { noremap = true, silent = true })
 
 -- Function to handle the "qqq" prompt
 local function quit_prompt()
